@@ -87,7 +87,7 @@ data "cloudinit_config" "config" {
           After=atlantis-chown-disk.service
           [Service]
           Environment=HOME=/home/atlantis
-          ExecStartPre=/usr/bin/docker-credential-gcr configure-docker ${var.region}-docker.pkg.dev
+          ExecStartPre=/usr/bin/docker-credential-gcr configure-docker --registries ${var.region}-docker.pkg.dev
           ExecStart=/usr/bin/docker run -u ${local.atlantis_uid} --rm --publish '0.0.0.0:${local.atlantis_port}:${local.atlantis_port}' -v ${local.atlantis_disk_mount_path}:${local.atlantis_data_dir} %{for key, value in var.env_vars} -e '${key}=${value}'%{endfor} --name=atlantis ${var.image} ${join(" ", var.command)} ${join(" ", var.args)}
           ExecStop=/usr/bin/docker stop atlantis
           ExecStopPost=/usr/bin/docker rm atlantis
